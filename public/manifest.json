@@ -4,8 +4,8 @@
   "description": "Organizacja życia dla dwojga",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#667eea",
-  "theme_color": "#667eea",
+  "background_color": "#f0fdf4",
+  "theme_color": "#22c55e",
   "icons": [
     {
       "src": "/logo.png",
