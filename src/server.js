@@ -40,12 +40,6 @@ const registerLimiter = rateLimit({
 
 app.use('/api/', generalLimiter);
 
-// Debug - pokaż sekret (tylko na chwilę!)
-app.get('/api/debug', (req, res) => {
-  const secret = process.env.RESET_SECRET || 'NOT_SET';
-  res.json({ first4: secret.substring(0, 4), length: secret.length });
-});
-
 // === AUTH ===
 
 app.post('/api/register', registerLimiter, async (req, res) => {
