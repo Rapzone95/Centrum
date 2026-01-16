@@ -326,6 +326,36 @@
             font-size: 48px;
             margin-bottom: 10px;
         }
+
+        /* Install button */
+        .install-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 16px auto 0;
+            max-width: 280px;
+        }
+
+        .install-btn:hover {
+            transform: scale(1.02);
+        }
+
+        .install-btn:active {
+            transform: scale(0.98);
+        }
+
+        .install-btn.hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -353,6 +383,9 @@
                 <input type="password" id="loginPassword" placeholder="Wpisz hasło">
             </div>
             <button onclick="login()">Wejdź</button>
+            <button id="installBtn" class="install-btn hidden" onclick="installApp()">
+                📲 Zainstaluj aplikację
+            </button>
             <div class="error" id="loginError"></div>
         </div>
 
@@ -383,6 +416,33 @@
         let token = localStorage.getItem('token');
         let currentUser = null;
         let selectedUser = null;
+
+        // === PWA INSTALL ===
+        let deferredPrompt;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installBtn').classList.remove('hidden');
+        });
+
+        async function installApp() {
+            if (!deferredPrompt) return;
+
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+
+            if (outcome === 'accepted') {
+                document.getElementById('installBtn').classList.add('hidden');
+            }
+
+            deferredPrompt = null;
+        }
+
+        window.addEventListener('appinstalled', () => {
+            document.getElementById('installBtn').classList.add('hidden');
+        });
+        // === END PWA INSTALL ===
 
         function selectUser(username) {
             selectedUser = username;
