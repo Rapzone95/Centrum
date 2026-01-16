@@ -1,56 +1,54 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import db from './db.js';
+import pool from './db.js';
 
 const SALT_ROUNDS = 10;
 
-// Hashowanie hasła
 export async function hashPassword(password) {
   return await bcrypt.hash(password, SALT_ROUNDS);
 }
 
-// Weryfikacja hasła
 export async function verifyPassword(password, hash) {
   return await bcrypt.compare(password, hash);
 }
 
-// Tworzenie użytkownika
-export function createUser(username, password, displayName) {
-  return new Promise(async (resolve, reject) => {
-    const passwordHash = await hashPassword(password);
-    db.run(
-      'INSERT INTO users (username, password_hash, display_name) VALUES (?, ?, ?)',
-      [username, passwordHash, displayName],
-      function(err) {
-        if (err) reject(err);
-        else resolve(this.lastID);
-      }
-    );
-  });
+export async function createUser(username, password, displayName) {
+  const passwordHash = await hashPassword(password);
+  const result = await pool.query(
+    'INSERT INTO users (username, password_hash, display_name) VALUES ($1, $2, $3) RETURNING id',
+    [username, passwordHash, displayName]
+  );
+  return result.rows[0].id;
 }
 
-// Logowanie
-export function loginUser(username, password) {
-  return new Promise((resolve, reject) => {
-    db.get('SELECT * FROM users WHERE username = ?', [username], async (err, user) => {
-      if (err) return reject(err);
-      if (!user) return resolve(null);
+export async function loginUser(username, password) {
+  const result = await pool.query(
+    'SELECT * FROM users WHERE username = $1',
+    [username]
+  );
 
-      const valid = await verifyPassword(password, user.password_hash);
-      if (!valid) return resolve(null);
+  const user = result.rows[0];
+  if (!user) return null;
 
-      const token = jwt.sign(
-        { id: user.id, username: user.username },
-        process.env.JWT_SECRET,
-        { expiresIn: '7d' }
-      );
+  const valid = await verifyPassword(password, user.password_hash);
+  if (!valid) return null;
 
-      resolve({ token, user: { id: user.id, username: user.username, displayName: user.display_name } });
-    });
-  });
+  const token = jwt.sign(
+    { id: user.id, username: user.username },
+    process.env.JWT_SECRET,
+    { expiresIn: '7d' }
+  );
+
+  return {
+    token,
+    user: {
+      id: user.id,
+      username: user.username,
+      displayName: user.display_name
+    }
+  };
 }
 
-// Middleware do weryfikacji tokena
 export function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
