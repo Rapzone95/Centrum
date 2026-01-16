@@ -2,7 +2,27 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import pool from './db.js';
 
-const SALT_ROUNDS = 10;
+const SALT_ROUNDS = 12; // Zwiększone bezpieczeństwo
+
+// Walidacja siły hasła
+export function validatePassword(password) {
+  if (password.length < 10) {
+    return { valid: false, message: 'Hasło musi mieć minimum 10 znaków' };
+  }
+  if (!/[A-Z]/.test(password)) {
+    return { valid: false, message: 'Hasło musi zawierać dużą literę' };
+  }
+  if (!/[a-z]/.test(password)) {
+    return { valid: false, message: 'Hasło musi zawierać małą literę' };
+  }
+  if (!/[0-9]/.test(password)) {
+    return { valid: false, message: 'Hasło musi zawierać cyfrę' };
+  }
+  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+    return { valid: false, message: 'Hasło musi zawierać znak specjalny (!@#$%...)' };
+  }
+  return { valid: true };
+}
 
 export async function hashPassword(password) {
   return await bcrypt.hash(password, SALT_ROUNDS);
