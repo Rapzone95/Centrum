@@ -3,7 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import rateLimit from 'express-rate-limit';
 import pool from './db.js';
-import { createUser, loginUser, authenticateToken, validatePassword } from './auth.js';
+import { createUser, loginUser, authenticateToken, validatePassword, changePassword } from './auth.js';
 
 dotenv.config();
 
@@ -16,14 +16,12 @@ app.use(express.static('public'));
 
 // === RATE LIMITING ===
 
-// Ogólny limit - max 100 żądań na 15 minut
 const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
   message: { error: 'Zbyt wiele żądań. Spróbuj ponownie później.' }
 });
 
-// Strict limit dla logowania - max 5 prób na minutę
 const loginLimiter = rateLimit({
   windowMs: 60 * 1000,
   max: 5,
@@ -31,11 +29,10 @@ const loginLimiter = rateLimit({
   skipSuccessfulRequests: true
 });
 
-// Limit dla rejestracji - max 3 na godzinę
 const registerLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   max: 3,
-  message: { error: 'Zbyt many prób rejestracji. Spróbuj ponownie później.' }
+  message: { error: 'Zbyt wiele prób rejestracji. Spróbuj ponownie później.' }
 });
 
 app.use('/api/', generalLimiter);
@@ -46,7 +43,6 @@ app.post('/api/register', registerLimiter, async (req, res) => {
   try {
     const { username, password, displayName } = req.body;
 
-    // Walidacja
     if (!username || !password || !displayName) {
       return res.status(400).json({ error: 'Wszystkie pola są wymagane' });
     }
@@ -55,7 +51,6 @@ app.post('/api/register', registerLimiter, async (req, res) => {
       return res.status(400).json({ error: 'Nazwa użytkownika: 3-20 znaków' });
     }
 
-    // Walidacja siły hasła
     const passwordValidation = validatePassword(password);
     if (!passwordValidation.valid) {
       return res.status(400).json({ error: passwordValidation.message });
@@ -79,6 +74,36 @@ app.post('/api/login', loginLimiter, async (req, res) => {
     const result = await loginUser(username, password);
     if (!result) return res.status(401).json({ error: 'Złe dane logowania' });
     res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Zmiana hasła (wymaga stare hasło)
+app.post('/api/change-password', authenticateToken, async (req, res) => {
+  try {
+    const { oldPassword, newPassword } = req.body;
+
+    if (!oldPassword || !newPassword) {
+      return res.status(400).json({ error: 'Oba hasła są wymagane' });
+    }
+
+    const passwordValidation = validatePassword(newPassword);
+    if (!passwordValidation.valid) {
+      return res.status(400).json({ error: passwordValidation.message });
+    }
+
+    const result = await pool.query('SELECT * FROM users WHERE id = $1', [req.user.id]);
+    const user = result.rows[0];
+
+    const bcrypt = await import('bcrypt');
+    const valid = await bcrypt.default.compare(oldPassword, user.password_hash);
+    if (!valid) {
+      return res.status(401).json({ error: 'Stare hasło jest nieprawidłowe' });
+    }
+
+    await changePassword(req.user.id, newPassword);
+    res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

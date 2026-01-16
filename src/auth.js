@@ -69,6 +69,14 @@ export async function loginUser(username, password) {
   };
 }
 
+export async function changePassword(userId, newPassword) {
+  const passwordHash = await hashPassword(newPassword);
+  await pool.query(
+    'UPDATE users SET password_hash = $1 WHERE id = $2',
+    [passwordHash, userId]
+  );
+}
+
 export function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
