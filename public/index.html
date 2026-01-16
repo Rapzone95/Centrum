@@ -11,7 +11,12 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -19,106 +24,319 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 16px;
         }
+
         .container {
             background: white;
-            padding: 40px;
-            border-radius: 20px;
+            padding: 24px 20px;
+            border-radius: 24px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            max-width: 500px;
-            width: 90%;
+            width: 100%;
+            max-width: 100%;
         }
-        h1 { color: #667eea; margin-bottom: 30px; text-align: center; }
+
+        /* Desktop - mniejszy, centrowany */
+        @media (min-width: 480px) {
+            .container {
+                padding: 40px;
+                max-width: 420px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                max-width: 500px;
+            }
+        }
+
+        /* Logo */
+        .logo-container {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .logo {
+            max-width: 80px;
+            height: auto;
+        }
+
+        @media (min-width: 480px) {
+            .logo {
+                max-width: 100px;
+            }
+            .logo-container {
+                margin-bottom: 20px;
+            }
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 24px;
+            text-align: center;
+            font-size: 28px;
+        }
+
+        @media (min-width: 480px) {
+            h1 {
+                margin-bottom: 30px;
+                font-size: 32px;
+            }
+        }
+
+        /* User selection */
         .user-select {
             display: flex;
-            gap: 20px;
-            margin-bottom: 25px;
+            gap: 12px;
+            margin-bottom: 20px;
         }
+
         .user-option {
             flex: 1;
-            padding: 20px;
+            padding: 16px 12px;
             border: 3px solid #e0e0e0;
-            border-radius: 15px;
+            border-radius: 16px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s;
         }
-        .user-option:hover { border-color: #667eea; }
+
+        .user-option:hover {
+            border-color: #667eea;
+        }
+
         .user-option.selected {
             border-color: #667eea;
             background: #f0f3ff;
         }
+
         .user-option .avatar {
-            font-size: 48px;
-            margin-bottom: 10px;
+            font-size: 40px;
+            margin-bottom: 8px;
         }
+
+        @media (min-width: 480px) {
+            .user-option {
+                padding: 20px;
+            }
+            .user-option .avatar {
+                font-size: 48px;
+                margin-bottom: 10px;
+            }
+        }
+
         .user-option .name {
             font-weight: 600;
             color: #333;
+            font-size: 14px;
         }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 5px; color: #555; font-weight: 500; }
-        input {
+
+        @media (min-width: 480px) {
+            .user-option .name {
+                font-size: 16px;
+            }
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        @media (min-width: 480px) {
+            .form-group {
+                margin-bottom: 20px;
+            }
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input[type="password"],
+        input[type="text"] {
             width: 100%;
-            padding: 12px;
+            padding: 14px 16px;
             border: 2px solid #e0e0e0;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 16px;
         }
-        input:focus { outline: none; border-color: #667eea; }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        /* Checkbox */
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 12px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+
+        .checkbox {
+            width: 22px;
+            height: 22px;
+            flex-shrink: 0;
+        }
+
+        .checkbox-wrapper label {
+            margin: 0;
+            font-size: 14px;
+        }
+
+        /* Buttons */
         button {
             width: 100%;
-            padding: 12px;
+            padding: 14px 16px;
             background: #667eea;
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            margin-top: 10px;
+            margin-top: 8px;
+            transition: background 0.2s;
         }
-        button:hover { background: #5568d3; }
+
+        @media (min-width: 480px) {
+            button {
+                padding: 12px;
+                margin-top: 10px;
+            }
+        }
+
+        button:hover {
+            background: #5568d3;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .btn-small {
+            width: auto;
+            padding: 8px 14px;
+            margin: 0;
+            font-size: 14px;
+            min-width: 44px;
+            min-height: 44px;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        /* Tasks */
         .task {
-            padding: 15px;
+            padding: 14px 16px;
             margin: 10px 0;
             background: #f8f9fa;
-            border-radius: 10px;
+            border-radius: 14px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 10px;
         }
-        .task.completed { opacity: 0.6; text-decoration: line-through; }
-        .task.shared { border-left: 4px solid #667eea; }
-        .task-actions button {
-            width: auto;
-            padding: 5px 15px;
-            margin: 0 5px;
+
+        .task.completed {
+            opacity: 0.5;
+        }
+
+        .task.completed .task-title {
+            text-decoration: line-through;
+        }
+
+        .task.shared {
+            border-left: 4px solid #667eea;
+        }
+
+        .task-title {
+            flex: 1;
+            word-break: break-word;
+            font-size: 15px;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        /* Logout */
+        .logout {
+            background: #dc3545;
+            margin-top: 20px;
+        }
+
+        .logout:hover {
+            background: #c82333;
+        }
+
+        /* Utility */
+        .hidden {
+            display: none !important;
+        }
+
+        .error {
+            color: #dc3545;
+            margin-top: 12px;
+            text-align: center;
             font-size: 14px;
         }
-        .logout { background: #dc3545; margin-top: 20px; }
-        .logout:hover { background: #c82333; }
-        .hidden { display: none; }
-        .error { color: #dc3545; margin-top: 10px; text-align: center; }
+
         .user-info {
             text-align: center;
             color: #666;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             font-size: 14px;
         }
-        .checkbox { width: auto; margin-right: 10px; }
+
+        .shared-badge {
+            font-size: 12px;
+            color: #667eea;
+            margin-left: 4px;
+        }
+
+        /* Tasks container */
+        #tasks {
+            margin-top: 20px;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 30px 20px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <!-- Ekran logowania -->
         <div id="loginScreen">
-            <div style="text-align: center; margin-bottom: 20px;">
-                <img src="/logo.png" alt="Centrum Logo" style="max-width: 120px; height: auto;">
+            <div class="logo-container">
+                <img src="/logo.png" alt="Centrum" class="logo">
             </div>
             <h1>Centrum</h1>
 
-            <!-- Wybór użytkownika -->
             <div class="user-select">
                 <div class="user-option" data-user="Jarek" onclick="selectUser('Jarek')">
                     <div class="avatar">👨</div>
@@ -140,22 +358,22 @@
 
         <!-- Główna aplikacja -->
         <div id="appScreen" class="hidden">
-            <div style="text-align: center; margin-bottom: 15px;">
-                <img src="/logo.png" alt="Centrum Logo" style="max-width: 80px; height: auto;">
+            <div class="logo-container">
+                <img src="/logo.png" alt="Centrum" class="logo" style="max-width: 50px;">
             </div>
             <h1>Centrum</h1>
             <div class="user-info">Witaj, <strong id="userName"></strong>!</div>
 
             <div class="form-group">
                 <input type="text" id="taskInput" placeholder="Nowe zadanie...">
-                <label style="margin-top: 10px;">
+                <div class="checkbox-wrapper">
                     <input type="checkbox" id="sharedCheckbox" class="checkbox">
-                    Udostępnij partnerowi
-                </label>
+                    <label for="sharedCheckbox">Udostępnij partnerowi</label>
+                </div>
             </div>
             <button onclick="addTask()">Dodaj zadanie</button>
 
-            <div id="tasks" style="margin-top: 30px;"></div>
+            <div id="tasks"></div>
 
             <button class="logout" onclick="logout()">Wyloguj</button>
         </div>
@@ -241,20 +459,38 @@
             });
             const tasks = await res.json();
 
-            document.getElementById('tasks').innerHTML = tasks
+            const tasksContainer = document.getElementById('tasks');
+
+            if (tasks.length === 0) {
+                tasksContainer.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📝</div>
+                        <p>Brak zadań. Dodaj pierwsze!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            tasksContainer.innerHTML = tasks
                 .map(t => `
                     <div class="task ${t.completed ? 'completed' : ''} ${t.shared ? 'shared' : ''}">
-                        <span>${t.title} ${t.shared ? '👥' : ''}</span>
+                        <span class="task-title">${escapeHtml(t.title)}${t.shared ? '<span class="shared-badge">👥</span>' : ''}</span>
                         <div class="task-actions">
-                            <button onclick="toggleTask(${t.id}, ${!t.completed})">
+                            <button class="btn-small" onclick="toggleTask(${t.id}, ${!t.completed})">
                                 ${t.completed ? '↩️' : '✓'}
                             </button>
-                            <button onclick="deleteTask(${t.id})" style="background: #dc3545;">
+                            <button class="btn-small btn-danger" onclick="deleteTask(${t.id})">
                                 🗑️
                             </button>
                         </div>
                     </div>
                 `).join('');
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
 
         async function addTask() {
@@ -302,6 +538,12 @@
         document.addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && !document.getElementById('loginScreen').classList.contains('hidden')) {
                 login();
+            }
+            if (e.key === 'Enter' && !document.getElementById('appScreen').classList.contains('hidden')) {
+                const input = document.getElementById('taskInput');
+                if (document.activeElement === input) {
+                    addTask();
+                }
             }
         });
     </script>

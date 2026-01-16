@@ -48,10 +48,11 @@ Centrum to aplikacja do organizacji życia codziennego - zarządzanie zadaniami 
 
 ### Co już wiem o użytkowniku
 - Preferuje szybkie tempo, mało "water talking"
-- Amator w code - prostota ponad elegancję
+- Amator w code - prostota ponad elegancją
 - Chce gotowe rozwiązania, nie wykłady
 - Ceni bezpieczeństwo (hasła, rate limiting)
 - Workflow: planuj → buduj → potem commit
+- **Głównie korzysta z telefonu** - mobile-first design!
 
 ### Next prompts - co dalej budujemy?
 1. **Kategorie zadań** - Praca, Dom, Zakupy, Zdrowie z kolorami
