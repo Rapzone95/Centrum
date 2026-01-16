@@ -109,6 +109,37 @@ app.post('/api/change-password', authenticateToken, async (req, res) => {
   }
 });
 
+// Reset hasła (dla odzyskania dostępu - wymaga secret key)
+app.post('/api/reset-password', async (req, res) => {
+  try {
+    const { username, secretKey, newPassword } = req.body;
+
+    // Secret key z .env - tylko właściciel zna go
+    if (secretKey !== process.env.RESET_SECRET || !process.env.RESET_SECRET) {
+      return res.status(403).json({ error: 'Brak dostępu' });
+    }
+
+    if (!username || !newPassword) {
+      return res.status(400).json({ error: 'Brak danych' });
+    }
+
+    const passwordValidation = validatePassword(newPassword);
+    if (!passwordValidation.valid) {
+      return res.status(400).json({ error: passwordValidation.message });
+    }
+
+    const result = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
+    if (!result.rows[0]) {
+      return res.status(404).json({ error: 'Użytkownik nie istnieje' });
+    }
+
+    await changePassword(result.rows[0].id, newPassword);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // === TASKS ===
 
 app.get('/api/tasks', authenticateToken, async (req, res) => {

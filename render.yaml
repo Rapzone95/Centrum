@@ -17,6 +17,8 @@ services:
         generateValue: true
       - key: SESSION_SECRET
         generateValue: true
+      - key: RESET_SECRET
+        generateValue: true
 
 databases:
   - name: centrum-db
