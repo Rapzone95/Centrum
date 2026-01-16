@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 import dotenv from 'dotenv';
 import rateLimit from 'express-rate-limit';
 import pool from './db.js';
@@ -13,8 +14,32 @@ const PORT = process.env.PORT || 3000;
 // Trust proxy dla Render (rate-limit)
 app.set('trust proxy', 1);
 
-app.use(cors());
-app.use(express.json());
+// CORS - tylko produkcja + localhost dla dev
+const allowedOrigins = [
+  'https://centrum-6nxr.onrender.com',
+  'http://localhost:3000',
+  'http://localhost:3003'
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true); // pozwalaj na bez-origin (mobile, postman)
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS blocked'));
+    }
+  }
+}));
+
+// Helmet - nagłówki bezpieczeństwa
+app.use(helmet({
+  contentSecurityPolicy: false, // wyłączony dla inline skryptów w dev
+  hsts: false // wyłączony na localhost
+}));
+
+// Limit rozmiaru body - przeciwko atakom na pamięć
+app.use(express.json({ limit: '1mb' }));
 app.use(express.static('public'));
 
 // === RATE LIMITING ===
@@ -163,6 +188,10 @@ app.post('/api/tasks', authenticateToken, async (req, res) => {
 
     if (!title || title.trim().length === 0) {
       return res.status(400).json({ error: 'Tytuł jest wymagany' });
+    }
+
+    if (title.length > 500) {
+      return res.status(400).json({ error: 'Tytuł max 500 znaków' });
     }
 
     const result = await pool.query(

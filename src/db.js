@@ -9,8 +9,6 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false }
 });
 
-console.log('DATABASE_URL:', process.env.DATABASE_URL ? 'loaded' : 'MISSING!');
-
 // Inicjalizacja tabel
 async function initDatabase() {
   const client = await pool.connect();
@@ -37,7 +35,6 @@ async function initDatabase() {
       )
     `);
 
-    console.log('Database tables initialized');
   } finally {
     client.release();
   }
